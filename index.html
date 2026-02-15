@@ -153,7 +153,7 @@ setInterval(fetchPrices, 60000);
 
     <h3 id="result" style="margin-top:15px; color:gold"></h3>
 </div>
-    <script>
+ <script>
 async function calcGold() {
     const grams = document.getElementById("grams").value;
     const karat = document.getElementById("karat").value;
@@ -167,26 +167,27 @@ async function calcGold() {
         const res = await fetch("/api/prices");
         const data = await res.json();
 
-        const key = "الذهب عيار " + karat;
-        const priceText = data[key]?.بيع;
+        const key = "عيار " + karat;
+        const priceText = data[key]?.بيع || data[key]?.sell;
 
         if (!priceText) {
             document.getElementById("result").innerText = "مش لاقي السعر حالياً";
             return;
         }
 
-        const price = parseFloat(priceText.replace(/[^\d.]/g, ""));
+        const price = parseFloat(priceText.toString().replace(/[^\d.]/g, ""));
         const total = grams * price;
 
         document.getElementById("result").innerText =
             "السعر التقريبي: " + total.toFixed(0) + " جنيه";
     } catch (e) {
-        document.getElementById("result").innerText = "حصل خطأ";
+        document.getElementById("result").innerText = "حصل خطأ في الاتصال";
     }
 }
 </script>
 </body>
 
 </html>
+
 
 
