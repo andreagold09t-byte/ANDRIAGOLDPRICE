@@ -167,9 +167,11 @@ async function calcGold() {
         const res = await fetch("/api/prices");
         const data = await res.json();
 
-        // نلاقي المفتاح الصح تلقائي
-        const key = Object.keys(data).find(k => k.includes("عيار " + karat));
+       
+const key = Object.keys(data).find(k => k.includes("عيار " + karat));
 
+console.log("المفتاح اللي لقيناه:", key);
+        
         if (!key) {
             document.getElementById("result").innerText = "مش لاقي السعر حالياً";
             return;
@@ -190,6 +192,7 @@ async function calcGold() {
 </body>
 
 </html>
+
 
 
 
