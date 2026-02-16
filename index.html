@@ -153,9 +153,9 @@ setInterval(fetchPrices, 60000);
 
     <h3 id="result" style="margin-top:15px; color:gold"></h3>
 </div>
- <script>
+<script>
 async function calcGold() {
-    const grams = document.getElementById("grams").value;
+    const grams = parseFloat(document.getElementById("grams").value);
     const karat = document.getElementById("karat").value;
 
     if (!grams) {
@@ -167,15 +167,17 @@ async function calcGold() {
         const res = await fetch("/api/prices");
         const data = await res.json();
 
-        const key = "عيار " + karat;
-        const priceText = data[key]?.بيع || data[key]?.sell;
+        // نلاقي المفتاح الصح تلقائي
+        const key = Object.keys(data).find(k => k.includes("عيار " + karat));
 
-        if (!priceText) {
+        if (!key) {
             document.getElementById("result").innerText = "مش لاقي السعر حالياً";
             return;
         }
 
-        const price = parseFloat(priceText.toString().replace(/[^\d.]/g, ""));
+        const priceText = data[key]["بيع"];
+
+        const price = parseFloat(priceText.replace(/[^\d.]/g, ""));
         const total = grams * price;
 
         document.getElementById("result").innerText =
@@ -188,6 +190,7 @@ async function calcGold() {
 </body>
 
 </html>
+
 
 
 
