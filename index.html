@@ -167,8 +167,9 @@ async function calcGold() {
     const karat = document.getElementById("karat").value;
     const type = document.getElementById("type").value; // بيع أو شراء
 
-    if (!grams) {
-        document.getElementById("result").innerText = "اكتب عدد الجرامات";
+    if (!grams || grams <= 0) {
+        document.getElementById("result").innerText = "اكتب عدد الجرامات صحيح";
+        document.getElementById("note").innerText = "";
         return;
     }
 
@@ -176,21 +177,19 @@ async function calcGold() {
         const res = await fetch("/api/prices");
         const data = await res.json();
 
-        // نلاقي المفتاح الصح تلقائي
-        const key = Object.keys(data).find(k => k.includes("عيار " + karat));
+        const key = Object.keys(data).find(k => k.includes("الذهب عيار " + karat));
 
-        if (!key) {
+        if (!key || !data[key]) {
             document.getElementById("result").innerText = "مش لاقي السعر حالياً";
             document.getElementById("note").innerText = "";
             return;
         }
 
         let priceText = type === "شراء" ? data[key]["شراء"] : data[key]["بيع"];
-        let price = parseFloat(priceText.replace(/[^\d.]/g, ""));
+        let price = parseFloat(priceText.toString().replace(/[^\d.]/g, ""));
 
-        // لو بيع، نخصم 2% من السعر
         if (type === "بيع") {
-            price = price * 0.98;
+            price = price * 0.98; // خصم 2%
         }
 
         const total = grams * price;
@@ -198,14 +197,12 @@ async function calcGold() {
         document.getElementById("result").innerText =
             السعر التقريبي (${type}):  + total.toFixed(0) + " جنيه";
 
-        // نعرض الملاحظة المناسبة
-        if (type === "شراء") {
-            document.getElementById("note").innerText = "ملحوظة: السعر غير شامل الضريبة والمصنعية";
-        } else {
-            document.getElementById("note").innerText = "ملحوظة: البيع بدون خصم 2%";
-        }
+        document.getElementById("note").innerText = type === "شراء" 
+            ? "ملحوظة: السعر غير شامل الضريبة والمصنعية" 
+            : "ملحوظة: البيع بدون خصم 2%";
 
     } catch (e) {
+        console.error(e);
         document.getElementById("result").innerText = "حصل خطأ في الاتصال";
         document.getElementById("note").innerText = "";
     }
@@ -214,6 +211,7 @@ async function calcGold() {
 </body>
 
 </html>
+
 
 
 
