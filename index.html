@@ -135,9 +135,9 @@ setInterval(fetchPrices, 60000);
 <h2>  احسب دهبك </h2>
 
 <div style="background:#111; padding:15px; border-radius:10px; max-width:400px">
-    
+
     <label>عدد الجرامات:</label><br>
-    <input type="number" id="grams" placeholder=" " style="width:100%; padding:8px; margin:5px 0"><br>
+    <input type="number" id="grams" placeholder="مثلا 10" style="width:100%; padding:8px; margin:5px 0"><br>
 
     <label>اختر العيار:</label><br>
     <select id="karat" style="width:100%; padding:8px; margin:5px 0">
@@ -147,21 +147,25 @@ setInterval(fetchPrices, 60000);
         <option value="14">عيار 14</option>
     </select>
 
+    <label>اختر نوع العملية:</label><br>
+    <select id="type" style="width:100%; padding:8px; margin:5px 0">
+        <option value="بيع">بيع</option>
+        <option value="شراء">شراء</option>
+    </select>
+
     <button onclick="calcGold()" style="width:100%; padding:10px; background:gold; border:none; font-weight:bold; cursor:pointer">
         احسب السعر
     </button>
 
     <h3 id="result" style="margin-top:15px; color:gold"></h3>
-<p style="margin-top:5px; font-size:14px; color:#fbbf24;">
-  ملحوظة: السعر غير شامل الضريبة والمصنعية
-</p>
-
-    <h3 id="result" style="margin-top:15px; color:gold"></h3>
+    <p id="note" style="margin-top:5px; font-size:14px; color:#fbbf24;"></p>
 </div>
+
 <script>
 async function calcGold() {
     const grams = parseFloat(document.getElementById("grams").value);
     const karat = document.getElementById("karat").value;
+    const type = document.getElementById("type").value; // بيع أو شراء
 
     if (!grams) {
         document.getElementById("result").innerText = "اكتب عدد الجرامات";
@@ -172,31 +176,45 @@ async function calcGold() {
         const res = await fetch("/api/prices");
         const data = await res.json();
 
-       
-const key = Object.keys(data).find(k => k.includes("عيار " + karat));
+        // نلاقي المفتاح الصح تلقائي
+        const key = Object.keys(data).find(k => k.includes("عيار " + karat));
 
-console.log("المفتاح اللي لقيناه:", key);
-        
         if (!key) {
             document.getElementById("result").innerText = "مش لاقي السعر حالياً";
+            document.getElementById("note").innerText = "";
             return;
         }
 
-        const priceText = data[key]["بيع"];
+        let priceText = type === "شراء" ? data[key]["شراء"] : data[key]["بيع"];
+        let price = parseFloat(priceText.replace(/[^\d.]/g, ""));
 
-        const price = parseFloat(priceText.replace(/[^\d.]/g, ""));
+        // لو بيع، نخصم 2% من السعر
+        if (type === "بيع") {
+            price = price * 0.98;
+        }
+
         const total = grams * price;
 
         document.getElementById("result").innerText =
-            "السعر التقريبي: " + total.toFixed(0) + " جنيه";
+            السعر التقريبي (${type}):  + total.toFixed(0) + " جنيه";
+
+        // نعرض الملاحظة المناسبة
+        if (type === "شراء") {
+            document.getElementById("note").innerText = "ملحوظة: السعر غير شامل الضريبة والمصنعية";
+        } else {
+            document.getElementById("note").innerText = "ملحوظة: البيع بدون خصم 2%";
+        }
+
     } catch (e) {
         document.getElementById("result").innerText = "حصل خطأ في الاتصال";
+        document.getElementById("note").innerText = "";
     }
 }
 </script>
 </body>
 
 </html>
+
 
 
 
