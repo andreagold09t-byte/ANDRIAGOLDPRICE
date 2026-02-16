@@ -128,39 +128,6 @@ async function fetchPrices() {
 
 fetchPrices();
 setInterval(fetchPrices, 60000);
-</script>
-
-<hr style="margin:30px 0">
-
-<h2>  احسب دهبك </h2>
-
-<div style="background:#111; padding:15px; border-radius:10px; max-width:400px">
-
-    <label>عدد الجرامات:</label><br>
-    <input type="number" id="grams" placeholder="مثلا 10" style="width:100%; padding:8px; margin:5px 0"><br>
-
-    <label>اختر العيار:</label><br>
-    <select id="karat" style="width:100%; padding:8px; margin:5px 0">
-        <option value="24">عيار 24</option>
-        <option value="21">عيار 21</option>
-        <option value="18">عيار 18</option>
-        <option value="14">عيار 14</option>
-    </select>
-
-    <label>اختر نوع العملية:</label><br>
-    <select id="type" style="width:100%; padding:8px; margin:5px 0">
-        <option value="بيع">بيع</option>
-        <option value="شراء">شراء</option>
-    </select>
-
-    <button onclick="calcGold()" style="width:100%; padding:10px; background:gold; border:none; font-weight:bold; cursor:pointer">
-        احسب السعر
-    </button>
-
-    <h3 id="result" style="margin-top:15px; color:gold"></h3>
-    <p id="note" style="margin-top:5px; font-size:14px; color:#fbbf24;"></p>
-</div>
-
 <script>
 async function calcGold() {
     const grams = parseFloat(document.getElementById("grams").value);
@@ -176,6 +143,7 @@ async function calcGold() {
     try {
         const res = await fetch("/api/prices");
         const data = await res.json();
+        console.log("Data from backend:", data); // للتأكد من شكل البيانات
 
         const key = Object.keys(data).find(k => k.includes("الذهب عيار " + karat));
 
@@ -195,7 +163,7 @@ async function calcGold() {
         const total = grams * price;
 
         document.getElementById("result").innerText =
-            السعر التقريبي (${type}):  + total.toFixed(0) + " جنيه";
+            `السعر التقريبي (${type}): ${total.toFixed(0)} جنيه`;
 
         document.getElementById("note").innerText = type === "شراء" 
             ? "ملحوظة: السعر غير شامل الضريبة والمصنعية" 
@@ -211,6 +179,7 @@ async function calcGold() {
 </body>
 
 </html>
+
 
 
 
