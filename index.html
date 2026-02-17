@@ -89,46 +89,69 @@ h1 {
     Web Developed by TomasAtef
 </div>
 
-<!-- جلب الأسعار -->
 <script>
+const CACHE_KEY = "gold_prices_cache";
+
 async function fetchPrices() {
+    const goldContainer = document.getElementById('gold');
+    const currencyContainer = document.getElementById('currency');
+
+    // 🥇 1- عرض الكاش فورًا
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+        renderPrices(JSON.parse(cached));
+    } else {
+        goldContainer.innerHTML = "<div>جاري تحميل الأسعار...</div>";
+    }
+
+    // 🥈 2- جلب السعر الجديد في الخلفية
     try {
         const res = await fetch('/api/prices');
         const data = await res.json();
 
-        const goldContainer = document.getElementById('gold');
-        const currencyContainer = document.getElementById('currency');
+        // حفظ الكاش
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
 
-        goldContainer.innerHTML = '';
-        currencyContainer.innerHTML = '';
-
-        for (const [key, value] of Object.entries(data)) {
-            const card = document.createElement('div');
-            card.className = 'card';
-
-            if (typeof value === 'object') {
-                card.innerHTML = `
-                    <div class="card-title">${key}</div>
-                    <div class="price sell">بيع: ${value.بيع} جنيه</div>
-                    <div class="price buy">شراء: ${value.شراء} جنيه</div>
-                `;
-                goldContainer.appendChild(card);
-            } else {
-                card.innerHTML = `
-                    <div class="card-title">${key}</div>
-                    <div class="price">${value} جنيه</div>
-                `;
-                currencyContainer.appendChild(card);
-            }
-        }
+        // تحديث الشاشة
+        renderPrices(data);
 
     } catch (err) {
-        console.error("خطأ في جلب البيانات", err);
+        console.log("Offline mode");
     }
 }
 
+// 🎯 دالة عرض الأسعار
+function renderPrices(data) {
+    const goldContainer = document.getElementById('gold');
+    const currencyContainer = document.getElementById('currency');
+
+    goldContainer.innerHTML = '';
+    currencyContainer.innerHTML = '';
+
+    for (const [key, value] of Object.entries(data)) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        if (typeof value === 'object') {
+            card.innerHTML = 
+                <div class="card-title">${key}</div>
+                <div class="price sell">بيع: ${value.بيع} جنيه</div>
+                <div class="price buy">شراء: ${value.شراء} جنيه</div>
+            ;
+            goldContainer.appendChild(card);
+        } else {
+            card.innerHTML = 
+                <div class="card-title">${key}</div>
+                <div class="price">${value} جنيه</div>
+            ;
+            currencyContainer.appendChild(card);
+        }
+    }
+}
+
+// تشغيل
 fetchPrices();
-setInterval(fetchPrices, 60000);
+setInterval(fetchPrices, 30000); // تحديث كل 30 ثانية
 </script>
 
 <hr style="margin:30px 0">
@@ -212,4 +235,5 @@ async function calcGold() {
 
 </body>
 </html>
+
 
