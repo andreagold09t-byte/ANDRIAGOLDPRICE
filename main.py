@@ -2,7 +2,7 @@ from flask import Flask, jsonify, send_file
 import requests
 from bs4 import BeautifulSoup
 
-app = Flask(name)
+app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 def get_all_prices():
@@ -45,5 +45,5 @@ def index():
 
 import os
 
-if name == "main":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
