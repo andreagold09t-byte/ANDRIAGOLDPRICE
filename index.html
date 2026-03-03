@@ -88,7 +88,6 @@ h1 {
 </head>
 
 <body>
-    
   <div class="logo-container">
         <img src="https://i.postimg.cc/jqJyZgR7/photo-2026-02-18-03-52-30-removebg-preview.png" alt="لوجو مصوغات أندريا">
     </div>
@@ -102,46 +101,7 @@ h1 {
 <div class="container" id="currency"></div>
 
 
-<script>
-async function fetchPrices() {
-    try {
-        const res = await fetch('/api/prices');
-        const data = await res.json();
 
-        const goldContainer = document.getElementById('gold');
-        const currencyContainer = document.getElementById('currency');
-
-        goldContainer.innerHTML = '';
-        currencyContainer.innerHTML = '';
-
-        for (const [key, value] of Object.entries(data)) {
-            const card = document.createElement('div');
-            card.className = 'card';
-
-            if (typeof value === 'object') {
-                card.innerHTML = `
-                    <div class="card-title">${key}</div>
-                    <div class="price sell">بيع: ${value.بيع} جنيه</div>
-                    <div class="price buy">شراء: ${value.شراء} جنيه</div>
-                `;
-                goldContainer.appendChild(card);
-            } else {
-                card.innerHTML = `
-                    <div class="card-title">${key}</div>
-                    <div class="price">${value} جنيه</div>
-                `;
-                currencyContainer.appendChild(card);
-            }
-        }
-
-    } catch (err) {
-        console.error("خطأ في جلب البيانات", err);
-    }
-}
-
-fetchPrices();
-setInterval(fetchPrices, 60000);
-</script>
 <hr style="margin:30px 0">
 
 <!-- حاسبة الذهب -->
@@ -225,12 +185,48 @@ async function calcGold() {
     Web Developed by TomasAtef
 </div>
 
+<script>
+async function fetchPrices() {
+    try {
+        const res = await fetch("/api/prices");
+        const data = await res.json();
+
+        const goldContainer = document.getElementById('gold');
+        const currencyContainer = document.getElementById('currency');
+
+        goldContainer.innerHTML = '';
+        currencyContainer.innerHTML = '';
+
+        for (const [key, value] of Object.entries(data)) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            if (typeof value === 'object') {
+                card.innerHTML = `
+                    <div class="card-title">${key}</div>
+                    <div class="price sell">بيع: ${value.بيع} جنيه</div>
+                    <div class="price buy">شراء: ${value.شراء} جنيه</div>
+                `;
+                goldContainer.appendChild(card);
+            } else {
+                card.innerHTML = `
+                    <div class="card-title">${key}</div>
+                    <div class="price">${value} جنيه</div>
+                `;
+                currencyContainer.appendChild(card);
+            }
+        }
+
+    } catch (err) {
+        console.error("خطأ في جلب البيانات", err);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetchPrices();
+    setInterval(fetchPrices, 60000);
+});
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
