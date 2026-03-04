@@ -200,9 +200,7 @@ async function calcGold() {
         let priceText = type === "شراء" ? data[key]["شراء"] : data[key]["بيع"];
         let price = parseFloat(priceText.toString().replace(/[^\d.]/g, ""));
 
-        if (type === "بيع") {
-            price = price * 0.98; // خصم 2%
-        }
+    
 
         const total = grams * price;
 
@@ -227,6 +225,7 @@ async function calcGold() {
 
 </body>
 </html>
+
 
 
 
