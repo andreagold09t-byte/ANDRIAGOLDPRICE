@@ -206,8 +206,8 @@ async function calcGold() {
             `السعر التقريبي (${type}): ${total.toFixed(0)} جنيه`;
 
         document.getElementById("note").innerText = type === "شراء" 
-            ? "ملحوظة: السعر غير شامل الضريبة والمصنعية" 
-            : "ملحوظة: البيع بدون خصم %2";
+            ? "ملحوظة: السعر بدون خصم%2" 
+            : " السعر غير شامل الضريبة والمصنعية";
 
     } catch (e) {
         console.error(e);
@@ -223,6 +223,7 @@ async function calcGold() {
 
 </body>
 </html>
+
 
 
 
